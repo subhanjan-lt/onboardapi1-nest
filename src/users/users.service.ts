@@ -2,11 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDto } from './dto/user.dto';
+import { HeaderKeyMaster, HeaderKeysDocument } from './models/header-key-master.model';
 import { Users, UsersDocument } from './models/users.model';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(Users.name) private readonly model: Model<UsersDocument>) {}
+    constructor(@InjectModel(Users.name) private readonly model: Model<UsersDocument>, 
+        @InjectModel(HeaderKeyMaster.name) private readonly modelHeaders: Model<HeaderKeysDocument>) {}
+
+    async findAllHeaderKeys(): Promise<HeaderKeyMaster[]> {
+        return await this.modelHeaders.find().exec();
+    }
+
+    async findOneHeaderKey(valid_key: String): Promise<HeaderKeyMaster> {
+        return await this.modelHeaders.findOne({valid_key: valid_key}).exec();
+    }
 
     async findAll(): Promise<Users[]> {
         return await this.model.find().exec();
